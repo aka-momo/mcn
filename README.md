@@ -25,17 +25,17 @@
   - Mininet initialization
 
     ```
-      
+      sudo mn --topo linear,2,3 --switch ovsk --controller remote      
     ```
   - Run Command
 
     ```
-      
+      ./pox.py mcn.firewall
     ```
   - Run In Debug Mode
 
     ```
-      
+      ./pox.py log.level --DEBUG mcn.firewall
     ```
 ----
 * Task 3 : Server load balancing
