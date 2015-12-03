@@ -25,7 +25,7 @@
   - Mininet initialization
 
     ```
-      sudo mn --topo linear,2,3 --switch ovsk --controller remote      
+      sudo mn --topo linear,2,3 --mac --switch ovsk --controller remote      
     ```
   - Run Command
 
