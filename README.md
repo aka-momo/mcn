@@ -42,7 +42,11 @@
   - Mininet initialization
 
     ```
-      
+      sudo mn --arp --topo single,4 --mac --switch ovsk --controller ovsc
+      mininet> h1 arp -s 10.0.0.5 00:00:00:00:00:05
+      mininet> h2 python -m CGIHTTPServer &
+      mininet> h3 python -m CGIHTTPServer &
+      mininet> h4 python -m CGIHTTPServer &
     ```
   - Run Command
 
