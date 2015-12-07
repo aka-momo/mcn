@@ -120,7 +120,7 @@ class LearningSwitch (object):
         self.connection.send(msg)
         return
 
-    def flood (message = None):
+    def flood(message = None):
       """ Floods the packet """
       msg = of.ofp_packet_out()
       if time.time() - self.connection.connect_time >= _flood_delay:
