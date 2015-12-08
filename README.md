@@ -51,12 +51,13 @@
   - Run Command
 
     ```
-      
+       ./pox.py mcn.trial
     ```
   - Run In Debug Mode
 
     ```
-      
+       ./pox.py log.level --DEBUG mcn.trial
+
     ```
 ----
 * Task 4 : Path load balancing
