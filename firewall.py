@@ -213,14 +213,26 @@ class Firewall(object):
     log.debug("Connection %s" % (event.connection,))
     LearningSwitch(event.connection, self.transparent)
 
-def generateDeniedList(n):
+def generateDeniedList(s, h):
+  data = {}
+  for i in range(s):
+    data[i+1] = [i + 1]
+
+  for i in range(h):
+    for j in range(s):
+      switch = data[j+1]
+      switch += [switch[len(switch) - 1] + h]
+  
   deniedConnections = []
-  for i in  range(1, n*2+1, 2):
-    for j in range(0,n*2+1, 2)[1:]:
-      deniedConnections += [('00:00:00:00:00:0' + str(i), '00:00:00:00:00:0' + str(j))]
+  for k,v in data.iteritems():
+    for item in v:
+      for pair in data.items()[k:]:
+        for value in pair[1]:
+          deniedConnections += [('00:00:00:00:00:0' + str(item), '00:00:00:00:00:0' + str(value))]
+
   return deniedConnections
 
-def launch (hold_down=_flood_delay, hostsPerSwitch=3):
+def launch (hold_down=_flood_delay, nSwitches=3 , hostsPerSwitch=3):
   """
   Starts an L2 learning switch.
   """
@@ -232,6 +244,6 @@ def launch (hold_down=_flood_delay, hostsPerSwitch=3):
     raise RuntimeError("Expected hold-down to be a number")
 
   global DENIED_MACS
-  DENIED_MACS = generateDeniedList(int(hostsPerSwitch))
+  DENIED_MACS = generateDeniedList(int(nSwitches), int(hostsPerSwitch))
 
   core.registerNew(Firewall)

@@ -31,6 +31,8 @@
 
     ```
       ./pox.py mcn.firewall
+      OR
+      ./pox.py mcn.firewall --nSwitches=3 --hostsPerSwitch=3
     ```
   - Run In Debug Mode
 
