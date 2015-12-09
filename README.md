@@ -78,7 +78,7 @@
   - Mininet initialization
 
     ```
-      
+      sudo mn --custom=pox/mcn/task4topo.py --topo=mytopo --controller=remote
     ```
   - Run Command
 
