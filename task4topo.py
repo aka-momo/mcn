@@ -4,7 +4,7 @@ from mininet.topo import Topo
 #           s3
 #         /    \
 #        /      \
-# h1 - s1 - s4 - s2 - h1
+# h1 - s1 - s4 - s2 - h2
 #        \      /
 #         \    /
 #           s5
