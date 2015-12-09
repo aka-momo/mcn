@@ -33,18 +33,18 @@
       - PERMITTED_IPS: list of pair of ips (src, dst) that the src ip can only communicate with the specified dst ip. Communications with any other hosts in the network will be blocked.
       
       ```
-        ./pox.py mcn.firewall_1
+        ./pox.py mcn.firewall
       ```
 
     - Network virtualization:
       - A host x can ping host y iff they are connected to the same switch.
       ```
-        ./pox.py mcn.firewall
+        ./pox.py mcn.net_virtualization
 
         - you can specify number of switches and number of hosts per each switch
         - default: 3 switches and 3 hosts per each switch
 
-        ./pox.py mcn.firewall --nSwitches=3 --hostsPerSwitch=3
+        ./pox.py mcn.net_virtualization --nSwitches=3 --hostsPerSwitch=3
       ```
   - Run In Debug Mode
 
