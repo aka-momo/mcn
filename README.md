@@ -83,7 +83,7 @@
   - Run Command
 
     ```
-      
+      ./pox.py mcn.task_4 openflow.discovery
     ```
   - Run In Debug Mode
 

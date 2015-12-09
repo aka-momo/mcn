@@ -48,7 +48,7 @@ switches = {}
 mac_map = {}
 
 # [sw1][sw2] -> (distance, intermediate)
-path_map = defaultdict(lambda:defaultdict(lambda: (None, None)))
+path_map = defaultdict(lambda:defaultdict(lambda: (None, [])))
 
 # Waiting path.  (dpid,xid)->WaitingPath
 waiting_paths = {}
@@ -64,8 +64,10 @@ FLOW_HARD_TIMEOUT = 30
 PATH_SETUP_TIME = 4
 
 
+counter = 0
 
 def _calc_paths ():
+  global counter
   """
   Essentially Floyd-Warshall algorithm
   """
@@ -81,13 +83,12 @@ def _calc_paths ():
 
   sws = switches.values()
   path_map.clear()
+  counter += 1
   for k in sws:
     for j,port in adjacency[k].iteritems():
       if port is None: continue
-      path_map[k][j] = (1,[])
-    path_map[k][k] = (0,[]) # distance, intermediate
-
-
+      path_map[k][j] = (1, [])
+    path_map[k][k] = (0, []) # distance, intermediate
 
   #dump()
 
@@ -98,43 +99,33 @@ def _calc_paths ():
           if path_map[k][j][0] is not None:
             # i -> k -> j exists
             # ikj_dist = path_map[i][k][0]+path_map[k][j][0]
-            if path_map[i][j][0] is None or k not in path_map[i][j][1]:
+            if (path_map[i][j][0] is None or path_map[i][j][0] is 2) and k not in path_map[i][j][1]:
               # i -> k -> j is better than existing
-              if path_map[i][j][1] is []:
-                p = [k]
-                path_map[i][j] = (path_map[i][j][0],p)                
-              else:
-                p = path_map[i][j][1] + [k]
-                path_map[i][j] = (path_map[i][j][0],p)
-
-  print "here"
-  print path_map
+              p = path_map[i][j][1] + [k]
+              path_map[i][j] = (2,p)
 
   #print "--------------------"
   #dump()
 
-recentlyUsed = {}
-
 def intermediatePath(src, dst):
-  pmap = path_map[src][dst][1] + path_map[dst][src][1]
-  if pmap is []:
+  pmap = path_map[src][dst][1]
+  if len(pmap) is 0:
     return None
 
-  minIntermidiate = None
-  for intermediate in pmap.iteritems():
+  # print pmap
 
-    count = recentlyUsed[intermediate]
-    if count is None:
-      recentlyUsed[intermediate] = 1
-      return intermediate
-    if minIntermidiate is None:
-      minIntermidiate = intermediate
-    if count < recentlyUsed[minIntermidiate]:
-      minIntermidiate = intermediate
-  recentlyUsed[minIntermidiate] += 1
-  return minIntermidiate
+  i = 0
+  while i <= counter:
+    i += 1
+    intermediate = pmap.pop()
+    pmap.insert(0, intermediate)
 
-
+  print "------"
+  print dst
+  print intermediate
+  print src
+  print "-------/"
+  return intermediate
 
 def _get_raw_path (src, dst):
   """
