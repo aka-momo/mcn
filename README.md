@@ -29,11 +29,15 @@
     ```
   - Run Command
     - Firewall / blocked and permitted connections:
+      - BLOCKED_IPS : list of ips that cannot send to any other host but can recieve.
+      - PERMITTED_IPS: list of pair of ips (src, dst) that the src ip can only communicate with the specified dst ip. Communications with any other hosts in the network will be blocked.
       
       ```
         ./pox.py mcn.firewall_1
-      ```    
+      ```
+
     - Network virtualization
+      A host x can ping host y iff they are connected to the same switch.
       ```
         ./pox.py mcn.firewall
 
