@@ -218,11 +218,10 @@ def generateDeniedList(s, h):
   for i in range(s):
     data[i+1] = [i + 1]
 
-  for i in range(h):
-    for j in range(s):
-      switch = data[j+1]
-      switch += [switch[len(switch) - 1] + h]
-  
+  for i in range(s):
+    for j in range(h - 1):
+      switch = data[i+1]
+      switch += [switch[len(switch) - 1] + s]
   deniedConnections = []
   for k,v in data.iteritems():
     for item in v:
