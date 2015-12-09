@@ -25,15 +25,23 @@
   - Mininet initialization
 
     ```
-      sudo mn --topo linear,2,3 --mac --switch ovsk --controller remote      
+      sudo mn --topo linear,3,3 --mac --switch ovsk --controller remote      
     ```
   - Run Command
+    - Firewall / blocked and permitted connections:
+      
+      ```
+        ./pox.py mcn.firewall_1
+      ```    
+    - Network virtualization
+      ```
+        ./pox.py mcn.firewall
 
-    ```
-      ./pox.py mcn.firewall
-      OR
-      ./pox.py mcn.firewall --nSwitches=2 --hostsPerSwitch=3
-    ```
+        - you can specify number of switches and number of hosts per each switch
+        - default: 3 switches and 3 hosts per each switch
+
+        ./pox.py mcn.firewall --nSwitches=3 --hostsPerSwitch=3
+      ```
   - Run In Debug Mode
 
     ```
