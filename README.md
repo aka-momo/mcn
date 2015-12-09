@@ -36,8 +36,8 @@
         ./pox.py mcn.firewall_1
       ```
 
-    - Network virtualization
-      A host x can ping host y iff they are connected to the same switch.
+    - Network virtualization:
+      - A host x can ping host y iff they are connected to the same switch.
       ```
         ./pox.py mcn.firewall
 
