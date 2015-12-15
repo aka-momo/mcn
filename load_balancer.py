@@ -9,7 +9,9 @@ import sys
 log = core.getLogger()
 
 #All the coming values were set automatically using the following commands 
+
 #sudo mn --arp --topo single,4 --mac --switch ovsk --controller remote
+
 #  mininet> h1 arp -s 10.0.0.5 00:00:00:00:00:05
 #  mininet> h2 python -m CGIHTTPServer &
 #  mininet> h3 python -m CGIHTTPServer &
@@ -19,7 +21,8 @@ log = core.getLogger()
 
 #Host/Client ip and macAddress
 virtual_ip = IPAddr("10.0.0.5")
-virtual_mac = EthAddr("00:00:00:00:00:01")
+virtual_mac = EthAddr("00:00:00:00:00:05")
+
 #List of servers linked to the switch
 server = {}
 
@@ -57,7 +60,9 @@ def handle_sent_packet(event):
 	selected_server_ip = server[index]['ip']
 	selected_server_mac = server[index]['mac']
 	selected_server_outport = server[index]['outport']
+
 	print("***************")
+
     #To take the next the second server for the next time
 	server_index += 1
 
@@ -75,7 +80,11 @@ def handle_sent_packet(event):
     #reverse msg is the response of the server to the client
 	reverse_msg = of.ofp_flow_mod()
 	reverse_msg.buffer_id = None
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
     #port used to send response
 	reverse_msg.in_port = selected_server_outport
 
@@ -98,9 +107,12 @@ def handle_sent_packet(event):
     #set out port to the same port the msg was sent through
 	reverse_msg.actions.append(of.ofp_action_output(port = msg.in_port))
     #send response to the 
+<<<<<<< HEAD
 	msgb = of.ofp_packet_out(data = event.ofp) # send packet out by packetInevent
 
  	event.connection.send(msgb)
+=======
+>>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
 	event.connection.send(reverse_msg)
 	return	EventHalt
 
@@ -112,11 +124,17 @@ def launch ():
 ###################################################################
 
     
+<<<<<<< HEAD
     # Only handle IPv4 flows
+=======
+>>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
     # if (not event.parsed.find("ipv4")):
     #     return EventContinue
     #log.debug for debugging 
     # log.debug("Broadcasting %s.%i -> %s.%i" %
     #      (packet.src, event.ofp.in_port, packet.dst, of.OFPP_ALL))
     #print packet 27 
+<<<<<<< HEAD
 
+=======
+>>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc

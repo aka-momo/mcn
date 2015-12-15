@@ -1,3 +1,8 @@
+# from pox.lib.revent import *
+# from pox.lib.util import dpidToStr
+from pox.lib.addresses import EthAddr
+# from collections import namedtuple
+
 # Copyright 2011-2012 James McCauley
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +30,6 @@ import pox.openflow.libopenflow_01 as of
 from pox.lib.util import dpid_to_str, str_to_dpid
 from pox.lib.util import str_to_bool
 import time
-from pox.lib.revent import EventHalt
 
 log = core.getLogger()
 
@@ -33,13 +37,8 @@ log = core.getLogger()
 # Can be overriden on commandline.
 _flood_delay = 0
 
-# cannot send to any other host but can recieve
-BLOCKED_IPS = ["10.0.0.1", "10.0.0.2"]
-
-# can only communicate with the specified hosts
-PERMITTED_IPS = [("10.0.0.4", "10.0.0.3"), ("10.0.0.5", "10.0.0.1"), ("10.0.0.4", "10.0.0.5")]
-
-# The rest of hosts can communicate with any other host
+# Parirs of denied connections
+DENIED_MACS = []
 
 class LearningSwitch (object):
   """
@@ -90,13 +89,10 @@ class LearningSwitch (object):
     # Our table
     self.macToPort = {}
 
-    self.blocked_ips = []
-    for ip in BLOCKED_IPS:
-      self.blocked_ips.append(ip)
-
-    self.permitted_ips = []
-    for pair in PERMITTED_IPS:
-      self.permitted_ips.append(pair)
+    self.denied = []
+    for row in DENIED_MACS:
+      self.denied.append((EthAddr(row[0]), EthAddr(row[1])))
+      self.denied.append((EthAddr(row[1]), EthAddr(row[0])))
 
     # We want to hear PacketIn messages, so we listen
     # to the connection
@@ -114,6 +110,16 @@ class LearningSwitch (object):
     """
 
     packet = event.parsed
+    for (src, dst) in self.denied:
+      if src == packet.src and dst == packet.dst:
+        match = of.ofp_match()
+        match.dl_src = src
+        match.dl_dst = dst
+        msg = of.ofp_flow_mod()
+        msg.match = match
+        self.connection.send(msg)
+        return
+
     def flood(message = None):
       """ Floods the packet """
       msg = of.ofp_packet_out()
@@ -158,34 +164,7 @@ class LearningSwitch (object):
         msg.in_port = event.port
         self.connection.send(msg)
 
-    # if packet.find("ipv4"):
-    #   if packet.find('ipv4').srcip not in self.blocked_ips:
-
-    # Handle blocked connections
-    if packet.find("ipv4"):
-      if not (packet.find('icmp') and packet.find('icmp').type == 0):
-        if packet.find('ipv4').srcip in self.blocked_ips:
-          print "BLOCKED"
-          return EventHalt
-
-    # handle permitted connections
-    count = 0 
-    if packet.find("ipv4"):
-      if not (packet.find('icmp') and packet.find('icmp').type == 0):
-        for (src, dst) in self.permitted_ips:
-          if packet.find('ipv4').srcip == src:
-            if packet.find('ipv4').dstip != dst:
-              count += 1
-            else:
-              count = 0
-              break
-
-    if count > 0: 
-      print "BLOCKED, can only connect to specific hosts"
-      return EventHalt
-
     self.macToPort[packet.src] = event.port # 1
-
 
     if not self.transparent: # 2
       if packet.type == packet.LLDP_TYPE or packet.dst.isBridgeFiltered():
@@ -234,8 +213,25 @@ class Firewall(object):
     log.debug("Connection %s" % (event.connection,))
     LearningSwitch(event.connection, self.transparent)
 
+def generateDeniedList(s, h):
+  data = {}
+  for i in range(s):
+    data[i+1] = [i + 1]
 
-def launch (hold_down=_flood_delay):
+  for i in range(s):
+    for j in range(h - 1):
+      switch = data[i+1]
+      switch += [switch[len(switch) - 1] + s]
+  deniedConnections = []
+  for k,v in data.iteritems():
+    for item in v:
+      for pair in data.items()[k:]:
+        for value in pair[1]:
+          deniedConnections += [('00:00:00:00:00:0' + str(item), '00:00:00:00:00:0' + str(value))]
+
+  return deniedConnections
+
+def launch (hold_down=_flood_delay, nSwitches=3 , hostsPerSwitch=3):
   """
   Starts an L2 learning switch.
   """
@@ -245,5 +241,8 @@ def launch (hold_down=_flood_delay):
     assert _flood_delay >= 0
   except:
     raise RuntimeError("Expected hold-down to be a number")
+
+  global DENIED_MACS
+  DENIED_MACS = generateDeniedList(int(nSwitches), int(hostsPerSwitch))
 
   core.registerNew(Firewall)
