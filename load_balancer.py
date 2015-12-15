@@ -80,11 +80,7 @@ def handle_sent_packet(event):
     #reverse msg is the response of the server to the client
 	reverse_msg = of.ofp_flow_mod()
 	reverse_msg.buffer_id = None
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
     #port used to send response
 	reverse_msg.in_port = selected_server_outport
 
@@ -107,12 +103,11 @@ def handle_sent_packet(event):
     #set out port to the same port the msg was sent through
 	reverse_msg.actions.append(of.ofp_action_output(port = msg.in_port))
     #send response to the 
-<<<<<<< HEAD
+
 	msgb = of.ofp_packet_out(data = event.ofp) # send packet out by packetInevent
 
  	event.connection.send(msgb)
-=======
->>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
+
 	event.connection.send(reverse_msg)
 	return	EventHalt
 
@@ -124,17 +119,12 @@ def launch ():
 ###################################################################
 
     
-<<<<<<< HEAD
+
     # Only handle IPv4 flows
-=======
->>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
+
     # if (not event.parsed.find("ipv4")):
     #     return EventContinue
     #log.debug for debugging 
     # log.debug("Broadcasting %s.%i -> %s.%i" %
     #      (packet.src, event.ofp.in_port, packet.dst, of.OFPP_ALL))
     #print packet 27 
-<<<<<<< HEAD
-
-=======
->>>>>>> d57617616ab7ae1692bc2465f6eb967f2205d0bc
